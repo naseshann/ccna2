@@ -135,7 +135,7 @@ vlan 50
 vlan 69
    name vlanNIshann
 vlan 70
-    name EXTRAVLAN
+    name TAKEHOME
 vlan 71
     name HRD-POLICY
 vlan 100
