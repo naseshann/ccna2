@@ -1,0 +1,140 @@
+config t
+
+
+vlan 21
+ name FINANCE
+ exit
+
+Int vlan 21
+ no shut
+ ip add 10.51.0.1 255.255.255.128
+ ip ospf 1 area 0
+ip dhcp excluded-add 10.51.0.1 10.51.0.100
+ip dhcp pool FINANCE.com
+ network 10.51.0.0 255.255.255.128
+ default-router 10.51.0.1
+ domain-name FINANCE.com
+ dns-server 10.51.1.10
+ option 150 ip 10.51.100.8
+ Int Fa 0/7
+  swi Voice vlan 21
+  do sh ip dhcp binding
+
+config t
+
+
+vlan 22
+ name ADMIN
+ exit
+
+Int vlan 40
+ no shut
+ ip add 192.168.129.1 255.255.255.0
+ ip ospf 1 area 0
+ip dhcp excluded-add 192.168.129.1 192.168.129.21
+ip dhcp pool Accenture.com
+ network 192.168.129.1 255.255.255.0
+ default-router 192.168.129.1
+ domain-name Accenture.com
+ dns-server 10.51.1.10
+ option 150 ip 10.51.100.8
+
+ Int Fa 0/5
+  swi Voice vlan 40
+  do sh ip dhcp binding
+
+
+189 = 192.168.128.0/18
+C = 8Bits
+S = /32 - /8 = /24
+I = 192.168.129.0 /24
+
+P1
+conf t
+int e0/0
+no shut
+ip address dhcp
+
+P2
+conf t
+int e0/0
+no shut
+ip address dhcp
+
+C1
+conf t
+
+vlan 40
+name Accenture
+Int vlan 40
+ no shut
+ ip add 192.168.129.1 255.255.255.0
+ip dhcp excluded-add 192.168.129.1 192.168.129.20
+ip dhcp pool Accenture.com
+ network 192.168.129.0 255.255.255.0
+ default-router 192.168.129.1
+ domain-name Accenture.com
+ dns-server 10.51.1.10
+
+C2
+conf t
+vlan 50
+name Concentrix
+Int vlan 50
+ no shut
+ ip add 172.16.48.1 255.255.240.0
+ip dhcp excluded-add 172.16.48.1 172.16.48.100
+ip dhcp pool Concentrix.com
+ network 172.16.48.0 255.255.240.0
+ default-router 172.16.48.1
+ domain-name Concentrix.com
+ dns-server 10.51.1.10
+
+
+A1
+
+conf t
+int e0/0
+no shut
+switchport mode access
+switchport access vlan 40
+
+A2
+conf t
+int e1/0
+no shut
+switchport mode access
+switchport access vlan 50
+
+
+
+
+
+2800 = 172.16.32.0/19
+C = 12Bits
+S = /32 - /12 = /20 (3rd, 16i)
+I = 172.16.48.0/20
+
+
+F = 172.16.48.1
+L = 192.168.63.254
+B = 192.168.63.255 
+N = 172.16.64.0
+
+Static Routing
+
+Destination | Subnet Mask | Next Hop
+R1
+conf t
+ip route 10.1.1.5 255.255.255.255 10.1.1.2
+R3
+ip route 10.1.1.0 255.255.255.252 10.1.1.5
+R2
+ip route 10.1.1.8 255.255.255.252 10.1.1.6
+R4
+ip route 10.1.1.0 255.255.255.252 10.1.1.9
+R1
+ip route 10.1.1.8 255.255.255.252 10.1.1.2
+
+conf t
+ip route 2.2.2.2 255.255.255.255 10.1.1.2
