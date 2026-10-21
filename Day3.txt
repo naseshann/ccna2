@@ -1,0 +1,248 @@
+Login: root
+Pass: C1sc0123
+
+Get IP:
+rm -rf /etc/udev/rules.d/70-persistent-net.rules
+reboot
+
+Set NetAdapters:
+NetAdapter 1: NAT (208.8.8.0/24)
+NetAdapter 2: VMNet15 (10.255.10.0/24)
+NetAdapter 3: VMNet16 (10.69.255.0/29)
+NetAdapter 4: VMNet17 (10.69.255.8/29)
+
+
+ ip route 0.0.0.0 0.0.0.0 192.168.1.129 10
+ ip route 0.0.0.0 0.0.0.0 192.168.1.130 1
+
+
+
+ip route 192.168.1.130 255.255.255.224 10.2.1.2
+ip route 192.168.1.129 255.255.255.225 10.2.1.1
+
+conf t
+router eigrp 100
+  network 10.1.4.4 0.0.0.3
+  network 10.2.1.0 0.0.0.255
+  network 10.2.2.0 0.0.0.255
+  network 192.168.1.128 0.0.0.31
+
+conf t
+router eigrp 100
+  network 10.1.4.8 0.0.0.3
+  network 10.2.1.0 0.0.0.255
+  network 10.2.2.0 0.0.0.255
+  network 192.168.1.128 0.0.0.31
+
+IGP (
+
+EGP (Ethernet Gateway Protocol)
+- PATH VECTOR
+- BGP
+
+5 Types of Hello Messages of EIGRP
+1. Hello - Keep Alive
+2. Query
+3. Update
+4. Reply
+5. Hello (ACK)
+
+EIGRP Metric
+K1 - Bandwidth
+K2 - Load
+K3 - Delay
+K4 - Reliability
+K5 - MTU
+K6 - Extended Value
+
+
+conf t
+router eigrp 100
+variance 10
+end
+
+R3
+conf t
+ router ospf 1
+  router-id 3.3.3.3
+  network 3.3.3.3 0.0.0.0 area 0
+  network 10.1.1.8 0.0.0.3 area 43
+  network 10.1.1.4 0.0.0.3 area 0
+  end
+
+R4
+conf t
+ router ospf 1
+  router-id 4.4.4.4
+  network 4.4.4.4 0.0.0.0 area 43
+  network 10.1.1.8 0.0.0.3 area 43
+  end
+
+R2
+conf t
+ router ospf 1
+  router-id 2.2.2.2
+  network 2.2.2.2 0.0.0.0 area 0
+  network 10.1.1.4 0.0.0.3 area 0
+  network 10.1.1.0 0.0.0.3 area 12
+  end
+
+conf t
+key chain CCNA
+key 1
+key-string pass
+crypto md5
+
+int e1/2
+ip ospf authentication key CCNA
+
+Neighborship and Adjacentsy
+1. Router ID
+2. Area ID
+3. Subnet Mask
+4. Network Type
+5. Timers
+6. Authentication
+
+R1
+conf t
+ router ospf 1
+  router-id 1.1.1.1
+  network 1.1.1.1 0.0.0.0 area 12
+  network 10.1.1.0 0.0.0.3 area 12
+  end
+
+conf t
+ router ospf 1
+  router-id 1.1.1.1
+  exit
+ int lo1
+  ip ospf 1 area 12
+  exit
+ int e1/0
+  ip ospf 1 area 12
+  end
+
+SEED METRICS FOR REDISTRIBUTION
+1. EIGRP - INFINITY
+2. RIP - INFINITY
+3. OSPF - 20 Cost
+4. ISIS - 0
+5. BGP - IGBP
+
+config T
+ router eigrp 100
+  redistribute ospf 1 metric 10000 100 255 1 1500
+
+PATH SELECTION PROCESS
+1. Longest Prefix Match (Pinaka madaming daliri)
+2. Admin Distance
+
+- C=0
+- S=1
+- 0=110
+- D=170
+- D=90
+- R=120
+- L1=115
+3. Metrics
+
+Cost for OSPF
+Ref BW / Int BW
+
+
+conf t
+int lo10
+ip add 192.168.51.51 255.255.255.255
+ip ospf area 51
+end
+
+
+conf t
+router eigrp 100
+network 192.168.51.0 0.0.0.255
+router ospf 1
+redistribute eigrp 100 subnets metric 2
+
+Type 1 Router Information
+Type 2 OSPF Advertisement within the same Area.
+Type 3 Advertisment in different Area
+Type 4 ASBR
+Type 5 Different Route
+
+BGP
+Automous System Number ASN
+
+
+config t
+ router bgp 2
+ bgp log-neighbor-changes
+ neighbor 25.2.5.5 remote-as 45
+ neighbor 32.3.2.3 remote-as 3
+ neighbor 24.2.4.4 remote-as 45
+ neighbor 207.7.7.1 remote-as 1
+ address-family ipv4
+  neighbor 25.2.5.5 activate
+  neighbor 32.3.2.3 activate
+  neighbor 24.2.4.4 activate
+  neighbor 24.2.4.4 activate
+  network 35.3.2.0 mask 255.255.255.0
+  network 25.2.5.0 mask 255.255.255.0
+  network 24.2.4.0 mask 255.255.255.0
+  network 22.22.22.22 mask 255.255.255.255
+  network 207.7.7.0 mask 255.255.255.0
+  end
+
+
+conf t
+ ip nat inside source static 10.1.4.6 208.8.8.100
+ ip nat inside source static 10.1.4.10 208.7.7.200
+ end
+
+conf t
+ ip nat inside source static 10.2.1.1 207.7.7.201
+
+
+10.1.2.0/28 Divide to 4
+C: Convert 2Bits
+A: Add 28 + 2 = 30
+I: Ipasok
+
+10.1.2.0/30
+10.1.2.4/30
+10.1.2.8/30
+10.1.2.12/30
+
+10.1.3.192/26
+C= 3Bits
+A= /26 + /3 = /29 (4th, 8i)
+I= 10.1.3.192/26
+
+10.1.3.192/29
+10.1.3.200/29
+10.1.3.208/29
+10.1.3.216/29
+10.1.3.224/29
+10.1.3.232/29
+10.1.3.240/29
+10.1.3.248/29
+
+10.30.64.0/19 Divide to 64 using 3rd Subnet
+Convert: 6bits
+Add /19+/6 = 25 (4th, 128i)
+10.30.64.0/25
+10.30.64.128/25
+10.30.65.0/25
+
+conf t
+int e0/0
+no switchport
+no shut
+ip address 10.30.65.1 255.255.255.128
+
+conf t
+int e0/0
+no switchport
+no shut
+ip address 10.30.65.126 255.255.255.128
+
