@@ -1,0 +1,89 @@
+1. 000a:000c:0000:0000:0000:0000:0000:0000/64 = a:c::
+	
+2. 0000:0000:0000:0000:0000:0000:0000:0000/0 = ::
+			
+3. fe80:0000:0000:0000:000a:0000:0000:000f/64 = fe8::a:0:0:f
+	
+4. 2002:6500:0000:3000:0000:0000:0000:0000/64 = 
+	
+5. 0000:0000:0000:0000:0000:0000:0000:0001/128 = 
+	
+6. ff00:0000:0000:beef:a00a:0aa0:0000:0000/8 = ff00::beef:a00a:aa0:0:0
+
+
+ipv6
+2001:fd80:1e0a::/48 
+                            Convert          Add              Ifinger
+Singapore - 8192 Sites       2r13             /61             3sF8i
+Japan     - 4096 Sites       2r12	      /60             3sF1i
+Cebu      - 16 Sites         2r4                              1sF1i
+Davao     - 8 Sites          2r3			      1sF2i				
+Makati    - 512 Sites        2r9                              3sF8i
+BGC       - 1024 Sites       2r10                             4sF4i
+
+int loopback 0
+ipv6 address 2001:fd80:1e80:0000::fafa/61
+
+int loopback 1
+ipv6 address 2001:fd80:1e80:0008::fafa/61
+
+int loopback 2
+ipv6 address 2001:fd80:1e80:0010::fafa/61
+
+int loopback 3
+ipv6 address 2001:fd80:1e80:0018::fafa/61
+
+int loopback 4
+ipv6 address 2001:fd80:1e80:0020::fafa/61
+
+do sh ipv6 int br
+
+
+Subnet 2001:fd8:2f1:1031::/64
+
+               512s		64s		8s		2048s        256
+Convert        2r9		2r6		2r3		2r11
+Add/64	       /73		/70		/67		/
+Finger         3sF8i		2sF4i		1s2i            3s2i
+	       0000		0000		0000		0000	0000
+  	       0080		0400		2000		0020	0001
+	       0100		0800		4000		0040	0002
+	       0180             0c00		6000		0060		
+	       0200		1000		8000
+               0280		1400            a000
+	       0300		1800		c000
+
+
+conf t
+ipv6 unicast-routing
+int loopback 0
+ipv6 address 2001:fd8:2f1:1031:0000::fafa/75
+int loopback 1
+ipv6 address 2001:fd8:2f1:1031:0020::fafa/75
+int loopback 2
+ipv6 address 2001:fd8:2f1:1031:0040::fafa/75
+int loopback 4
+ipv6 address 2001:fd8:2f1:1031:0060::fafa/75
+
+do sh ipv6 int br
+
+
+config t
+hostname coretaasPLDT
+Track 1 Int gi 0/1 line-protocol
+Int vlan 1
+standby 1 ip 10.51.1.6
+standby 1 preempt
+standby 1 Priority 150
+standby 1 Track 1 decrement 60
+
+
+config t
+hostname corebabaGLOBE
+Int vlan 1
+standby 1 ip 10.51.1.6
+standby 1 preempt
+standby 1 Priority 100
+end
+
+
